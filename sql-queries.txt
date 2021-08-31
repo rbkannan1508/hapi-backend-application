@@ -1,0 +1,33 @@
+CREATE TABLE userdetails (
+  user_id serial NOT NULL,
+  username VARCHAR(30) NOT NULL,
+  phone VARCHAR(30) NOT NULL,
+  email VARCHAR(30) NOT NULL,
+  password VARCHAR(30) NOT NULL,
+  role_id INTEGER NOT NULL,
+  account_id INTEGER NOT NULL,
+  PRIMARY KEY (user_id),
+  CONSTRAINT role_id FOREIGN KEY (role_id) REFERENCES roledetails (role_id) MATCH FULL,
+  CONSTRAINT account_id FOREIGN KEY (account_id) REFERENCES accountdetails (account_id) MATCH FULL
+);
+
+CREATE TABLE accountdetails (
+  account_id serial NOT NULL UNIQUE,
+  account_name VARCHAR(30) NOT NULL,
+  PRIMARY KEY (account_name)
+);
+
+CREATE TABLE roledetails (
+  role_id serial NOT NULL,
+  role_name VARCHAR(30) NOT NULL,
+  PRIMARY KEY (role_id)
+);
+
+INSERT INTO roledetails values (1,'Account Owner');
+INSERT INTO roledetails values (2,'User');
+
+CREATE TABLE accountfeatures (
+  feature_id serial NOT NULL,
+  feature_name VARCHAR(30) NOT NULL,
+  PRIMARY KEY (feature_id),
+);

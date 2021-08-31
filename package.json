@@ -1,0 +1,27 @@
+{
+  "name": "sample_node_1",
+  "version": "1.0.0",
+  "description": "Sample Node Application with Hapi and PostgreSQL connections",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "Bharathi Kannan",
+  "license": "ISC",
+  "dependencies": {
+    "catbox-redis": "^4.2.4",
+    "config": "^3.3.6",
+    "dotenv": "^10.0.0",
+    "ejs": "^3.1.6",
+    "hapi": "^16.1.0",
+    "inert": "^4.2.1",
+    "joi": "~10.2.2",
+    "pg": "^8.7.1",
+    "sequelize": "^6.6.5",
+    "vision": "^4.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}

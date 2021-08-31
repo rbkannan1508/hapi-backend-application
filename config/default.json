@@ -1,0 +1,16 @@
+{
+    "dbConfig": {
+        "host": "localhost",
+        "port": 5432,
+        "dbName": "postgres",
+        "username": "bharathikannan"
+    },
+    "server": {
+        "port": 3010,
+        "host": "localhost"
+    },
+    "roles": {
+        "account_owner_id": 1,
+        "user_id": 2
+    }
+  }

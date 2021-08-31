@@ -1,0 +1,41 @@
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Login Page</title>
+    </head>
+    <body>
+        <div>
+            <h2>
+                <ul>Sign Up</ul>
+            </h2>
+        </div>   
+        <form id="login"  action="./signupSubmit" method="POST">
+            <ul>
+                <label for="user">Username:</label>
+                <input id="username" name="username"/>
+            </ul>
+            <ul>
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone"/>
+            </ul>
+            <ul>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email"/>
+            </ul>
+            <ul>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password"/>
+            </ul>
+            <ul>
+                <label for="account">Account Name:</label>
+                <input type="text" id="account" name="account"/>
+            </ul>
+            <ul>
+                <input type="submit" value="Submit"/>
+            </ul>
+            <ul>
+                <p>Need to login?</p><a href="/login">Login</a>
+            </ul>
+        </form> 
+    </body>
+</html>
