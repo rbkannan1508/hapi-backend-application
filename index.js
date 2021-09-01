@@ -11,7 +11,7 @@ const routes = require('./routes/indexRoute');
 
 const server = new Hapi.Server();
 
-db.authenticate().then(() => console.log('Database connected in postgres')).catch(err => console.log('Error in connection'+err));
+db.authenticate().then(() => console.log('Connected to postgres through sequilize')).catch(err => console.log('Error in connection'+err));
 
 server.connection({
     port: config.get('server.port'), 
@@ -47,18 +47,16 @@ server.register(vision, (err) => {
         if(err) {
             console.log('Error in inert');
         }  
-    
-        server.route(routes.login.login);
-    
-        // routes.forEach((route) => {
-        //     server.route(route);
-        // });
-
-        server.route(routes.loginSubmit.loginSubmit);
-    
-        server.route(routes.signupSubmit.signupSubmit);
         
-        server.route(routes.signup.signup);
+        // server.route(routes.login.login);
+        // server.route(routes.loginSubmit.loginSubmit);
+        // server.route(routes.signupSubmit.signupSubmit);        
+        // server.route(routes.signup.signup);
     
+        routes.forEach((route) => {
+            route.forEach((index) => {
+                server.route(index);
+            });
+        });
     });
 });
