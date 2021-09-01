@@ -4,7 +4,7 @@ const accountmodel = require("../models/Accountdetails");
 const usermodel = require("../models/Userdetails");
 const showMessageFile = "./views/html/showMessage.html";
 
-module.exports.signup = function (request, reply) {
+module.exports.signupSubmit = function (request, reply) {
   let userData = {};
   if (request) {
     userData.username = request.payload.username;
@@ -62,3 +62,7 @@ module.exports.signup = function (request, reply) {
       });
   }
 };
+
+module.exports.signup = function (request, reply) {
+  reply.file('./views/html/signup.html');    
+}

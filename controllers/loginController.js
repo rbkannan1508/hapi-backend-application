@@ -2,7 +2,7 @@ let ejs = require('ejs');
 const usermodel = require('../models/Userdetails');
 const showMessageFile = './views/html/showMessage.html';
 
-module.exports.login = function (request, reply) { 
+module.exports.loginSubmit = function (request, reply) { 
     if(request) {
     let username = request.payload.username;
     let password = request.payload.password;
@@ -30,4 +30,8 @@ module.exports.login = function (request, reply) {
             }    
         });
     }
+}
+
+module.exports.login = function (request, reply) {
+    reply.file('./views/html/login.html');
 }
