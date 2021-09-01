@@ -1,4 +1,4 @@
-const accountController = require('../controllers/signupController');
+const signupController = require('../controllers/signupController');
 const Joi = require('joi');
 
 const signupSubmit = {
@@ -16,15 +16,13 @@ const signupSubmit = {
                 })
         }
     },
-    handler: accountController.signup                                   
+    handler: signupController.signupSubmit                                   
 }
 
 const signup = {
     method: 'GET',
     path: '/signup',
-    handler: function (request, reply) {
-        reply.file('./views/html/signup.html');    
-    } 
+    handler: signupController.signup
 }
 
 module.exports = [

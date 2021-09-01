@@ -3,15 +3,13 @@ const loginController = require('../controllers/loginController');
 const loginSubmit = {
     method: 'POST',
     path: '/loginSubmit',
-    handler: loginController.login                           
+    handler: loginController.loginSubmit                           
 }
 
 const login = {
     method: 'GET',
     path: '/login',
-    handler: function (request, reply) {
-        reply.file('./views/html/login.html');
-    }  
+    handler: loginController.login 
 }                                      
 
 module.exports = [
