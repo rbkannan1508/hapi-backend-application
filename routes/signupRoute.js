@@ -1,6 +1,5 @@
 const accountController = require('../controllers/signupController');
 const Joi = require('joi');
-let ejs = require('ejs');
 
 const signupSubmit = {
     method: 'POST',
@@ -28,7 +27,7 @@ const signup = {
     } 
 }
 
-module.exports = {
+module.exports = [
     signupSubmit,
     signup
-}
+]

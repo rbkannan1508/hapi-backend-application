@@ -1,11 +1,7 @@
-const loginSubmit = require('./loginRoute');
-const signupSubmit = require('./signupRoute');
-const signup = require('./signupRoute');
-const login  = require('./loginRoute');
+const loginRoutes = require('./loginRoute');
+const signupRoutes = require('./signupRoute');
 
-module.exports = {
-    loginSubmit,
-    signupSubmit,
-    signup,
-    login
-}
+module.exports = [
+    loginRoutes,
+    signupRoutes
+]

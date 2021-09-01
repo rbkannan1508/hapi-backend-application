@@ -14,7 +14,7 @@ const login = {
     }  
 }                                      
 
-module.exports = {
+module.exports = [
     loginSubmit,
     login
-}
+]
