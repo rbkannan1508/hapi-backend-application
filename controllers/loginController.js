@@ -6,15 +6,22 @@ const sequelize = require('../config/database');
 const showMessageFile = './views/html/showMessage.html';
 const profileFile = './views/html/profile.html';
 const { createToken } = require('../helpers/JWTToken');
+const config = require('config');
+const redis = require('redis');
+const client = redis.createClient(config.get('redis.port'));
 
-function makeid(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
+const redisCache = require('../helpers/redisCache');
+
+const makeid = (length) => {
+    return new Promise(resolve => {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        resolve(result);
+    });
 }
 
 module.exports.loginSubmit = async function (request, reply) { 
@@ -23,8 +30,10 @@ module.exports.loginSubmit = async function (request, reply) {
         let password = request.payload.password;
         console.log('request', request.payload);
         try {
-            let res = await usermodel.findOne({attributes: ['password'], where: {email: email}});
+            let res = await usermodel.findOne({attributes: ['password', 'accountId', 'id'], where: {email: email}});
             let resp = res.dataValues.password;
+            let accountId = res.dataValues.accountId;
+            let userId = res.dataValues.id;
             console.log('resp', resp);
             let check_password = resp;
             if(password === check_password) {
@@ -38,6 +47,9 @@ module.exports.loginSubmit = async function (request, reply) {
                     clearInvalid: false,
                     strictHeader: true
                 }
+                redisCache.setDataToCache('email', 3600, email);
+                redisCache.setDataToCache('accountId', 3600, accountId);
+                redisCache.setDataToCache('userId', 3600, userId);
                 reply.view(profileFile, { email: email }).header("Authorization", token).state("token", token, cookie_options);
             } else {
                 console.log('Authentication Failure');
@@ -65,22 +77,25 @@ module.exports.addNewUser = async function (request, reply) {
     userData.password = request.payload.password;
     userData.account_email = request.payload.account_email;
     const roleName = 'User';
-    let accountId, roleId;
+    // let accountId, roleId;
     await sequelize.transaction({}, async (t) => {
         /* Find from User Details */
-        try {
-            let response = await usermodel.findOne({ attributes: ["accountId"], where: { email: userData.account_email }, transaction: t });
-            accountId = response.dataValues.accountId;
-            console.log('Fetched userdetails successfully');
-            console.log('accountId', accountId);
-        }
-        catch (e) {
-            console.error(e, 'Fetching userdetails failed');
-            await t.rollback();
-        }
+        // try {
+        //     let response = await usermodel.findOne({ attributes: ["accountId"], where: { email: userData.account_email }, transaction: t });
+        //     accountId = response.dataValues.accountId;
+        //     console.log('Fetched userdetails successfully');
+        //     console.log('accountId', accountId);
+        // }
+        // catch (e) {
+        //     console.error(e, 'Fetching userdetails failed');
+        //     await t.rollback();
+        // }
+        let dataFromCache = {};
+        dataFromCache.accountId = await redisCache.getDataFromCache('accountId');
+        console.log('dataFromCache', dataFromCache);
         /* Find from Role Details */
         try {
-            let response = await rolemodel.findOne({ attributes: ["id"], where: { accountId: accountId, roleName: roleName }, transaction: t });
+            let response = await rolemodel.findOne({ attributes: ["id"], where: { accountId: dataFromCache.accountId, roleName: roleName }, transaction: t });
             roleId = response.dataValues.id;
             console.log('Fetched roledetails successfully');
             console.log('roleId', roleId);
@@ -92,7 +107,7 @@ module.exports.addNewUser = async function (request, reply) {
         /* Insert into User Details */
         try {
             await usermodel.create({ userName: userData.username, phone: userData.phone, email: userData.email, password: userData.password,
-                accountId: accountId, roleId: roleId}, { transaction: t });
+                accountId: dataFromCache.accountId, roleId: roleId}, { transaction: t });
             console.log("Successfully inserted User Details");
         }
         catch (e) {
@@ -109,17 +124,19 @@ module.exports.addNewUser = async function (request, reply) {
 }
 
 module.exports.listAllUsers = async function (request, reply) {
-    let account_email = request.payload.account_email;
-    let account_id;
+    // let account_email = request.payload.account_email;
+    // let account_id;
+    // try {
+    //     let res = await usermodel.findOne({ attributes: ['account_id'], where: {email: account_email} });
+    //     account_id = res.dataValues.account_id;
+    //     console.log('Success in getting data from User Table');
+    // } catch (err) {
+    //     console.error(err, 'Failure to get data from User Table');
+    // }
     try {
-        let res = await usermodel.findOne({ attributes: ['account_id'], where: {email: account_email} });
-        account_id = res.dataValues.account_id;
-        console.log('Success in getting data from User Table');
-    } catch (err) {
-        console.error(err, 'Failure to get data from User Table');
-    }
-    try {
-        let res = await usermodel.findAll({ where: {account_id: account_id} });
+        let dataFromCache = await redisCache.getDataFromCache('accountId');
+        console.log('dataFromCache', dataFromCache);
+        let res = await usermodel.findAll({ where: {account_id: dataFromCache} });
         let userArray = [];
         console.log('Success in getting data from User Table');
         res.forEach((resp) => {
@@ -155,11 +172,15 @@ module.exports.shortenurl = async function (request, reply) {
             accountId: 1
         };
         try {
-            let res = await usermodel.findOne({attributes: ['id', 'accountId'], where: {email: email}});
-            console.log('Success in fetching user details');
-            const userId = res.dataValues.id;
-            const accountId = res.dataValues.accountId;
-            const tinyUrl = makeid(6);
+            let dataFromCache = {};
+            dataFromCache.accountId = await redisCache.getDataFromCache('accountId');
+            dataFromCache.userId = await redisCache.getDataFromCache('userId');
+            console.log('dataFromCache', dataFromCache);
+            // let res = await usermodel.findOne({attributes: ['id', 'accountId'], where: {email: email}});
+            // console.log('Success in fetching user details');
+            const userId = dataFromCache.userId;
+            const accountId = dataFromCache.accountId;
+            const tinyUrl = await makeid(6);
             const isActive = true;
             let someDate = new Date();
             let numberOfDaysToAdd = 1;
@@ -179,7 +200,6 @@ module.exports.shortenurl = async function (request, reply) {
             return reply.view(showMessageFile, { message: message });
         }
         try {
-            console.log('setObject in next try block', setObject);
             await tinyurlmodel.create({ originalUrl: setObject.originalUrl, tinyUrl: setObject.tinyUrl, isActive: setObject.isActive, expiryDate: setObject.expiryDate,
                 userId: setObject.userId, accountId: setObject.accountId });
             let message = "Data Success";

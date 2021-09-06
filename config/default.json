@@ -16,5 +16,8 @@
     },
     "jwt": {
         "secret": "spectre"
+    },
+    "redis": {
+        "port": 6379
     }
   }
