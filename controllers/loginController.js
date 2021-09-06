@@ -5,24 +5,9 @@ const tinyurlmodel = require("../models/Tinyurl");
 const sequelize = require('../config/database');
 const showMessageFile = './views/html/showMessage.html';
 const profileFile = './views/html/profile.html';
-const { createToken } = require('../helpers/JWTToken');
-const config = require('config');
-const redis = require('redis');
-const client = redis.createClient(config.get('redis.port'));
-
+const JWTToken = require('../helpers/JWTToken');
 const redisCache = require('../helpers/redisCache');
-
-const makeid = (length) => {
-    return new Promise(resolve => {
-        var result           = '';
-        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var charactersLength = characters.length;
-        for ( var i = 0; i < length; i++ ) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        resolve(result);
-    });
-}
+const generateId = require('../helpers/generateId');
 
 module.exports.loginSubmit = async function (request, reply) { 
     if(request) {
@@ -38,7 +23,7 @@ module.exports.loginSubmit = async function (request, reply) {
             let check_password = resp;
             if(password === check_password) {
                 console.log('Authentication Successful');
-                let token = createToken(email); /* Create JWT Token */
+                let token = JWTToken.createToken(email); /* Create JWT Token */
                 const cookie_options = {
                     ttl: 1 * 24 * 60 * 60 * 1000, // expires after a day
                     encoding: 'none',
@@ -180,7 +165,7 @@ module.exports.shortenurl = async function (request, reply) {
             // console.log('Success in fetching user details');
             const userId = dataFromCache.userId;
             const accountId = dataFromCache.accountId;
-            const tinyUrl = await makeid(6);
+            const tinyUrl = await generateId.generateId(6);
             const isActive = true;
             let someDate = new Date();
             let numberOfDaysToAdd = 1;
