@@ -1,0 +1,20 @@
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Users List</title>
+    </head>
+    <body>
+        <div>
+            <h2>
+                <ul>Users List</ul>
+            </h2>
+        </div> 
+        <div>
+            <ul>
+                <%for (var user in userArray){%>
+                  <li><%=JSON.stringify(userArray[user])%></li>    
+                  <%}%>
+            </ul>
+        </div>
+    </body>
+</html> 

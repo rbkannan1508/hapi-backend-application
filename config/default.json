@@ -2,7 +2,7 @@
     "dbConfig": {
         "host": "localhost",
         "port": 5432,
-        "dbName": "postgres",
+        "dbName": "tinyurl",
         "username": "bharathikannan"
     },
     "server": {
@@ -10,7 +10,11 @@
         "host": "localhost"
     },
     "roles": {
-        "account_owner_id": 1,
-        "user_id": 2
+        "accountOwner": "Account Owner",
+        "admin": "Admin",
+        "user": "User"
+    },
+    "jwt": {
+        "secret": "spectre"
     }
   }

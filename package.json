@@ -1,11 +1,10 @@
 {
-  "name": "sample_node_1",
+  "name": "hapi_ejs_sequilize_application",
   "version": "1.0.0",
   "description": "Sample Node Application with Hapi and PostgreSQL connections",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon server.js"
   },
   "author": "Bharathi Kannan",
   "license": "ISC",
@@ -15,10 +14,14 @@
     "dotenv": "^10.0.0",
     "ejs": "^3.1.6",
     "hapi": "^16.1.0",
+    "hapi-auth-jwt2": "^7.4.1",
     "inert": "^4.2.1",
     "joi": "~10.2.2",
+    "jsonwebtoken": "^8.5.1",
+    "module": "^1.2.5",
     "pg": "^8.7.1",
     "sequelize": "^6.6.5",
+    "umzug": "^2.3.0",
     "vision": "^4.1.1"
   },
   "devDependencies": {
