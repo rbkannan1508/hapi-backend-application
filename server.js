@@ -4,7 +4,7 @@ const Hapi = require('hapi');
 let ejs = require('ejs');
 const db = require('./config/database');
 const config = require('config');
-const routes = require('./routes/indexRoute');
+const routes = require('./routes/index');
 const jwtAuthStrategy = require('./strategies/jwtAuth');
 const plugin = require('./plugins/plugin');
 const server = new Hapi.Server();
@@ -15,16 +15,23 @@ const init = async () => {
         host: config.get('server.host')
     });
 
+    await server.register(plugin);
+    console.log('Plugins registered');
+
     await server.start(function (err) {
         if(err) {
             console.log('Error in server start', err);
         }
         console.log('Server started at: ', server.info.uri);
-        db.authenticate().then(() => console.log('Connected to postgres through sequilize')).catch(err => console.log('Error in connection'+err));
+
+        db.authenticate().then(() => {
+            console.log('Connected to postgres through sequilize')
+        }).catch(err => {
+            console.log('Error in connection'+err);
+            process.exit(1);
+        });
     });
 
-    await server.register(plugin);
-    console.log('Plugins registered');
     
     server.views({
         engines: { html: ejs },

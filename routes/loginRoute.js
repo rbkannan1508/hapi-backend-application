@@ -28,8 +28,8 @@ const addNewUser = {
                     password: Joi.string().required(),
                     account_email: Joi.string().required()
                 })
-        },
-        auth: 'jwt'
+        }
+        // auth: 'jwt'
     },
     handler: loginController.addNewUser                           
 }
@@ -37,28 +37,28 @@ const addNewUser = {
 const listAllUsers = {
     method: 'POST',
     path: '/listAllUsers',
-    config: { auth: 'jwt' },
+    // config: { auth: 'jwt' },
     handler: loginController.listAllUsers
 }
 
 const tinyurl = {
     method: 'GET',
     path: '/tinyurl',
-    config: { auth: 'jwt' },
+    // config: { auth: 'jwt' },
     handler: loginController.tinyurl
 }
 
 const shortenurl = {
     method: 'POST',
     path: '/shortenurl',
-    config: { auth: 'jwt' },
+    // config: { auth: 'jwt' },
     handler: loginController.shortenurl
 }
 
 const listAllShortenedUrls = {
     method: 'GET',
     path: '/listAllShortenedUrls',
-    config: { auth: 'jwt' },
+    // config: { auth: 'jwt' },
     handler: loginController.listAllShortenedUrls
 }
 
