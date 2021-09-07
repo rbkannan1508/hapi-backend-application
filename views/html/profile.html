@@ -4,7 +4,56 @@
     </head>
     <body>
         <div>
-            <p>Welcome <%= username %></p>
+            <p>Welcome <%= email %></p>
+        </div>
+        <div>
+            <input type="button" name="adduser" id="adduser" value="Add User" onclick="document.getElementById('myModal').style.display='block'">
+        </div>
+        <div id="myModal" style="display: none;">
+            <div class="modal-content">
+              <span class="close" id="close" onclick="document.getElementById('myModal').style.display='none'">&times;</span>
+              <form id="newUser"  action="./addNewUser" method="POST">
+                <ul>
+                    <label for="user">Username:</label>
+                    <input id="username" name="username" value="Test 2"/>
+                </ul>
+                <ul>
+                    <label for="phone">Phone:</label>
+                    <input type="tel" id="phone" name="phone" value="9090907070"/>
+                </ul>
+                <ul>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" value="test2@test.com"/>
+                </ul>
+                <ul>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" value="test12345"/>
+                </ul>
+                <ul>
+                    <input type="hidden" id="account_email" name="account_email" value=<%= email %>  />
+                </ul>
+                <ul>
+                    <input type="submit" value="Submit"/>
+                </ul>
+                <ul>
+                    <p>Need to login?</p><a href="/login">Login</a>
+                </ul>
+            </form> 
+          </div>
+          </div>
+          <div>
+            <form id="newUser"  action="./listAllUsers" method="POST">
+                <ul>
+                    <input type="hidden" id="account_email" name="account_email" value=<%= email %>  />
+                </ul>
+                <ul>
+                    <input type="submit" value="List All Users"/>
+                </ul>
+            </form> 
+        </div>
+        <div>
+            <p>Shorten a URL: </p><a href='./tinyurl'>URL Shortener</a> 
+            <p>List of shortened URLs: </p><a href='./listAllShortenedUrls'>URLs</a> 
         </div>
     </body>
 </html>
