@@ -1,2 +1,4 @@
-# hapi-backend-application
-Hapi application in Node JS along with EJS and Sequilize 
+# urlshortener-backend
+URL Shortener application using Hapi, Sequilize ORM.
+
+FrontEnd Repo - https://github.com/rbkannan1508/urlshortener-frontend 
