@@ -47,7 +47,12 @@ const Tinyurl = db.define('tinyurl', {
         type: Sequelize.DATE
     }
 },{
-    freezeTableName: true
-})
+    freezeTableName: true,
+    hooks: {
+        afterUpdate: function() {
+            console.log('AFTER UPDATE HOOK CALLED');
+        }
+    }
+});
 
 module.exports = Tinyurl;

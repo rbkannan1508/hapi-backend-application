@@ -1,32 +1,37 @@
 <html lang="en">
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>URLs List</title>
-    </head>
-    <body>
-        <div>
-            <h2>
-                <ul>URLs List</ul>
-            </h2>
-        </div> 
-        <div>
-            <ul>
-                <%for (var url in urlArray){%>
-                  <li><%=JSON.stringify(Object.values(urlArray[url]))%></li>    
-                <%}%>
-            </ul>
-        </div>
-        <div>
-            <table>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URLs List</title>
+</head>
+
+<body>
+    <div>
+        <h2>
+            <ul>URLs List</ul>
+        </h2>
+    </div>
+    <div>
+        <% if(urlArray.length){ %>
+            <table style="width: 100%;border: 1px solid black;">
                 <tr>
-                   <th>Original URL</th><th>Shortened URL</th>
-                   <%for (var url in Object.values(urlArray)){%>
-                    <tr>
-                        <%=url%>
-                    </tr>
-                    <%}%>
+                    <th style="border: 1px solid black;">Original URL</th>
+                    <th style="border: 1px solid black;">Tiny URL</th>
+                    <th style="border: 1px solid black;">Delete</th>
                 </tr>
+                <%for (let i=0; i < urlArray.length; i++){%>
+                    <tr>
+                        <td style="border: 1px solid black;text-align: center;"><a target="_blank"
+                                href=<%= urlArray[i].originalUrl %> ><%=urlArray[i].originalUrl%></a></td>
+                        <td style="border: 1px solid black;text-align: center"><a target="_blank"
+                                href=<%= urlArray[i].originalUrl %> >http://localhost:3010/<%= urlArray[i].tinyUrl%></a></td>
+                        <td style="border: 1px solid black;text-align: center"><a target="_self" 
+                                href=./deleteUrl/<%= urlArray[i].tinyUrl %> >Delete</td>
+                    </tr>
+                <%}%>
             </table>
-        </div>
-    </body>
-</html> 
+        <% } %>
+    </div>
+</body>
+
+</html>

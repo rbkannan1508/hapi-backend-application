@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 const signupSubmit = {
     method: 'POST',
-    path: '/signupSubmit',
+    path: '/api/signup-submit',
     config: {
         validate: {
             payload:

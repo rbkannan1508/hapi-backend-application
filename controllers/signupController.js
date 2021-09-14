@@ -3,13 +3,13 @@ const accountmodel = require("../models/Account");
 const usermodel = require("../models/User");
 const rolemodel = require("../models/Role");
 const sequelize = require('../config/database');
-const showMessageFile = './views/html/showMessage.html';
-const profileFile = './views/html/profile.html';
 const { createToken } = require('../helpers/JWTToken');
+const redisCache = require('../helpers/redisCache');
 
 module.exports.signupSubmit = async function (request, reply) {
   let userData = {};
   if (request) {
+    console.log('request.payload', request.payload);
     userData.username = request.payload.username;
     userData.phone = request.payload.phone;
     userData.email = request.payload.email;
@@ -65,22 +65,45 @@ module.exports.signupSubmit = async function (request, reply) {
         console.error(e, 'Insert User Details failed');
         await t.rollback();
       }
+      /* Find from user Details */
+      try {
+        let response = await usermodel.findOne({ attributes: ['id'], where: {email: userData.email}, transaction: t });
+        userId = response.dataValues.id;
+        console.log('Successfully fetched userId', userId);
+      } catch (e) {
+        console.error(e, 'User Id fetch failed');
+        await t.rollback();
+      }
     }).then(() => {
-      userData = {};
-      let message = "Data Success";
-      return reply.view(showMessageFile, { message: message });
-      // let token = createToken(userData.email);
-      // const cookie_options = {
-      //     ttl: 1 * 24 * 60 * 60 * 1000, // expires after a day
-      //     encoding: 'none',    
-      //     isSecure: true,      
-      //     isHttpOnly: true,    
-      //     clearInvalid: false, 
-      //     strictHeader: true   
-      //   }
-      // reply.view(profileFile, { email: userData.email }).header("Authorization", token).state("token", token, cookie_options);
+      let token = createToken(userData.email);
+      const cookie_options = {
+          ttl: 1 * 24 * 60 * 60 * 1000, // expires after a day
+          encoding: 'none',
+          isSameSite: false,
+          isSecure: true,
+          isHttpOnly: false,
+          clearInvalid: false,
+          strictHeader: true,
+          path: '/'
+      }
+      redisCache.setDataToCache('email', 3600, userData.email);
+      redisCache.setDataToCache('accountId', 3600, accountId);
+      redisCache.setDataToCache('userId', 3600, userId);
+      let data = {
+          message: 'User Addition Successful',
+          accountId: accountId,
+          userId: userId,
+          email: userData.email,
+          username: userData.username
+      };
+      console.log('token****', token);
+      console.log('cookie_options***', cookie_options);
+      reply(data).header("Authorization", token).state("token", token, cookie_options);
       }).catch(err => {
-          console.log(err, 'error while navigating to dashboard after signup')
+          let data = {
+            message: 'Signup Failure'
+          }
+          reply(data + err);
       });
   }
 }

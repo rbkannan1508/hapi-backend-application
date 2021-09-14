@@ -7,7 +7,16 @@ const config = require('config');
 const routes = require('./routes/index');
 const jwtAuthStrategy = require('./strategies/jwtAuth');
 const plugin = require('./plugins/plugin');
-const server = new Hapi.Server();
+const server = new Hapi.Server({ 
+    connections: {
+            routes: {
+                cors: {
+                    origin:['*'],
+                    credentials:true
+                } 
+            } 
+        }
+    });
 
 const init = async () => {
     await server.connection({

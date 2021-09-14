@@ -12,13 +12,17 @@ const getDataFromCache = (fetchData) => {
             if(err) {
                 throw err;
             }
-            console.log('data', data);
             resolve(data);
         });
     });
 }
 
+const deleteDataFromCache = (key) => {
+    client.del(key);
+}
+
 module.exports = {
     setDataToCache,
-    getDataFromCache
+    getDataFromCache,
+    deleteDataFromCache
 }
