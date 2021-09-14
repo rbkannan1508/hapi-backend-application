@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 const signupSubmit = {
     method: 'POST',
-    path: '/signupSubmit',
+    path: '/api/signup-submit',
     config: {
         validate: {
             payload:
@@ -14,7 +14,8 @@ const signupSubmit = {
                     password: Joi.string().required(),
                     account: Joi.string().required()
                 })
-        }
+        },
+        auth : false
     },
     handler: signupController.signupSubmit                                   
 }
@@ -22,6 +23,7 @@ const signupSubmit = {
 const signup = {
     method: 'GET',
     path: '/signup',
+    config: { auth: false },
     handler: signupController.signup
 }
 
