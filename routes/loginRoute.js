@@ -14,12 +14,12 @@ const login = {
     handler: loginController.login
 }  
 
-const errorRedirect = {
-    method: 'GET',
-    path: '/',
-    config: { auth: false },
-    handler: loginController.errorRedirect
-} 
+// const errorRedirect = {
+//     method: 'GET',
+//     path: '/',
+//     config: { auth: false },
+//     handler: loginController.errorRedirect
+// } 
 
 module.exports = [
     loginSubmit,
