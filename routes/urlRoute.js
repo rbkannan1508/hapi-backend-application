@@ -8,26 +8,32 @@ const tinyurl = {
 
 const shortenurl = {
     method: 'POST',
-    path: '/api/shorten-url',
+    path: '/shorten-url',
     handler: urlController.shortenurl
 }
 
 const listAllShortenedUrls = {
     method: 'POST',
-    path: '/api/list-all-shortenedurls',
+    path: '/list-all-shortenedurls',
     handler: urlController.listAllShortenedUrls
 }
 
 const redirectURL = {
     method: 'GET',
-    path: '/api/redirect/{urlkey}',
+    path: '/redirect/{urlkey}',
     handler: urlController.redirectURL                          
 }
 
 const deleteURL = {
     method: 'GET',
-    path: '/api/delete-url/{urlkey}',
+    path: '/delete-url/{urlkey}',
     handler: urlController.deleteURL                          
+}
+
+const searchURL = {
+    method: 'GET',
+    path: `/search-url`,
+    handler: urlController.searchURL                          
 }
 
 module.exports = [
@@ -35,5 +41,6 @@ module.exports = [
     shortenurl,
     listAllShortenedUrls,
     redirectURL,
-    deleteURL
+    deleteURL,
+    searchURL
 ]

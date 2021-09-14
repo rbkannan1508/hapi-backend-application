@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 const addNewUser = {
     method: 'POST',
-    path: '/api/add-new-user',
+    path: '/add-new-user',
     config: {
         validate: {
             payload:
@@ -21,8 +21,8 @@ const addNewUser = {
 
 const listAllUsers = {
     method: 'GET',
-    path: '/api/list-all-users',
-    handler: userController.listAllUsers
+    path: '/list-all-users',
+    handler: userController.listAllUsers,
 }
 
 module.exports = [

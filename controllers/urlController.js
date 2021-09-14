@@ -141,3 +141,15 @@ module.exports.deleteURL = async function(request, reply) {
         // return reply.view(showMessageFile, { message: message });
     }
 }
+
+module.exports.searchURL = async function(request, reply) {
+    try {
+        const { text } = request.query;
+        console.log('text', text);
+        reply(inputValue);
+    } catch(err) {
+        console.log('Error in fetching url data', err);
+        let message = 'Error in fetching url data';
+        reply(message);
+    }
+}
