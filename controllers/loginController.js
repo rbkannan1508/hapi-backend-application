@@ -57,9 +57,9 @@ module.exports.loginSubmit = async function (request, reply) {
     }
 }
 
-module.exports.errorRedirect = async function(request, reply) {
-    let data = {
-        message: 'Page Not Found'
-    }
-    reply(data).status(401);
-}
+// module.exports.errorRedirect = async function(request, reply) {
+//     let data = {
+//         message: 'Page Not Found'
+//     }
+//     reply(data).status(401);
+// }
