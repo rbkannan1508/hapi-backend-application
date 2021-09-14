@@ -23,6 +23,5 @@ const login = {
 
 module.exports = [
     loginSubmit,
-    login,
-    errorRedirect
+    login
 ]
