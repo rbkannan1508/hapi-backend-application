@@ -32,7 +32,7 @@ const deleteURL = {
 
 const searchURL = {
     method: 'GET',
-    path: `/search-url`,
+    path: `/search-url/{inputValue}`,
     handler: urlController.searchURL                          
 }
 

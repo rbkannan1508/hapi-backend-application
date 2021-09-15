@@ -5,9 +5,11 @@ const rolemodel = require("../models/Role");
 const sequelize = require('../config/database');
 const { createToken } = require('../helpers/JWTToken');
 const redisCache = require('../helpers/redisCache');
+const bcrypt = require ('bcrypt');
+const saltRounds = 10;
 
 module.exports.signupSubmit = async function (request, reply) {
-  let userData = {};
+  const userData = {};
   if (request) {
     console.log('request.payload', request.payload);
     userData.username = request.payload.username;
@@ -49,12 +51,19 @@ module.exports.signupSubmit = async function (request, reply) {
       }
       /* Find from role Details */
       try {
-        let response = await rolemodel.findOne({ attributes: ["id"], where: { accountId: accountId, roleName: 'Account Owner' }, transaction: t });
+        const response = await rolemodel.findOne({ attributes: ["id"], where: { accountId: accountId, roleName: 'Account Owner' }, transaction: t });
         roleId = response.dataValues.id;
         console.log('Successfully fetched roleId', roleId);
       } catch (e) {
         console.error(e, 'Role Id fetch failed');
         await t.rollback();
+      }
+      /** Hashing Password */
+      try {
+        let hash = await bcrypt.hash(request.payload.password, saltRounds);
+        userData.password = hash;
+      } catch (e) {
+        console.error(e, 'Hashing password failed');
       }
       /* Insert into User Details */
       try {
@@ -67,7 +76,7 @@ module.exports.signupSubmit = async function (request, reply) {
       }
       /* Find from user Details */
       try {
-        let response = await usermodel.findOne({ attributes: ['id'], where: {email: userData.email}, transaction: t });
+        const response = await usermodel.findOne({ attributes: ['id'], where: {email: userData.email}, transaction: t });
         userId = response.dataValues.id;
         console.log('Successfully fetched userId', userId);
       } catch (e) {
@@ -75,7 +84,7 @@ module.exports.signupSubmit = async function (request, reply) {
         await t.rollback();
       }
     }).then(() => {
-      let token = createToken(userData.email);
+      const token = createToken(userData.email);
       const cookie_options = {
           ttl: 1 * 24 * 60 * 60 * 1000, // expires after a day
           encoding: 'none',
@@ -89,7 +98,7 @@ module.exports.signupSubmit = async function (request, reply) {
       redisCache.setDataToCache('email', 3600, userData.email);
       redisCache.setDataToCache('accountId', 3600, accountId);
       redisCache.setDataToCache('userId', 3600, userId);
-      let data = {
+      const data = {
           message: 'User Addition Successful',
           accountId: accountId,
           userId: userId,
@@ -98,12 +107,12 @@ module.exports.signupSubmit = async function (request, reply) {
       };
       console.log('token****', token);
       console.log('cookie_options***', cookie_options);
-      reply(data).header("Authorization", token).state("token", token, cookie_options);
+      reply(data).header("Authorization", token).state("token", token, cookie_options).code(200);
       }).catch(err => {
-          let data = {
+          const data = {
             message: 'Signup Failure'
           }
-          reply(data + err);
+          reply(data + err).code(500);
       });
   }
 }
