@@ -15,46 +15,44 @@ module.exports.addNewUser = async function (request, reply) {
     userData.account_email = request.payload.account_email;
     const roleName = 'User';
     await sequelize.transaction({}, async (t) => {
+        const account_email = request.auth && request.auth.credentials && request.auth.credentials.email;
         const dataFromCache = {};
-        dataFromCache.accountId = await redisCache.getDataFromCache('accountId');
-        console.log('dataFromCache', dataFromCache);
-        /* Find from Role Details */
+        const key = 'userDetails_' + account_email;
+        const userDetails = JSON.parse(await redisCache.getDataFromCache(key));
+        console.log('userDetails', userDetails);
+        dataFromCache.accountId = userDetails.accountId;
         try {
+            /* Find from Role Details */
             const response = await rolemodel.findOne({ attributes: ["id"], where: { accountId: dataFromCache.accountId, roleName: roleName }, transaction: t });
             roleId = response.id;
             console.log('Fetched roleId successfully', roleId);
-        }
-        catch (e) {
-            console.error(e, 'Fetching roledetails failed');
-            await t.rollback();
-        }
-        /* Insert into User Details */
-        try {
+
+            /* Insert into User Details */
             await usermodel.create({ userName: userData.username, phone: userData.phone, email: userData.email, password: userData.password,
                 accountId: dataFromCache.accountId, roleId: roleId}, { transaction: t });
             console.log("Successfully inserted User Details");
+
+            /** Replying to front-end */
+            const message = "User Insertion Success";
+            reply(message).code(200);
         }
         catch (e) {
             console.error(e, 'Failed in inserting User Details');
-            await t.rollback();
+            const data = {
+                message: 'API Failure'
+            }
+            reply(data + e).code(500);
         }
-    }).then(() => {
-        let message = "Data Success";
-        return reply.view(showMessageFile, { message: message }).code(200);
-    }).catch(err => {
-        console.log(err, 'error while navigating to dashboard after signup');
-        const data = {
-            message: 'API Failure'
-        }
-        reply(data).code(500);
     });
 }
 
 module.exports.listAllUsers = async function (request, reply) {
     try {
-        const dataFromCache = await redisCache.getDataFromCache('accountId');
-        console.log('dataFromCache', dataFromCache);
-        const res = await usermodel.findAll({attributes: ['id', 'username', 'phone', 'email', 'roleId', 'accountId'], where: {account_id: dataFromCache} });
+        const email = request.auth && request.auth.credentials && request.auth.credentials.email;
+        const key = 'userDetails_' + email;
+        const userDetails = JSON.parse(await redisCache.getDataFromCache(key));
+        const accountId = userDetails.accountId;
+        const res = await usermodel.findAll({attributes: ['id', 'username', 'phone', 'email', 'roleId', 'accountId'], where: {account_id: accountId} });
         let userArray = [];
         console.log('Success in getting data from User Table');
         res.forEach((resp) => {

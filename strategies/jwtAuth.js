@@ -4,7 +4,9 @@ const usermodel = require('../models/User');
 const redisCache = require('../helpers/redisCache');
 
 async function validate (decoded, request, callback) {
-    let email = await redisCache.getDataFromCache('email');
+    const key = 'userDetails_' + decoded.email;
+    const userDetails = JSON.parse(await redisCache.getDataFromCache(key));
+    const email = userDetails.email;
     if(email !== null) {
         return callback(null, true);
     } else {
