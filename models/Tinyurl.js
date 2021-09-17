@@ -49,8 +49,8 @@ const Tinyurl = db.define('tinyurl', {
 },{
     freezeTableName: true,
     hooks: {
-        afterUpdate: function() {
-            console.log('AFTER UPDATE HOOK CALLED');
+        afterValidate: function() {
+            console.log('AFTER Validate HOOK CALLED');
         }
     }
 });

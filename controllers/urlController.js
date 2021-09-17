@@ -2,8 +2,8 @@ const usermodel = require('../models/User');
 const tinyurlmodel = require("../models/Tinyurl");
 const redisCache = require('../helpers/redisCache');
 const generateId = require('../helpers/generateId');
-const sendMailQueue = require('../helpers/emailQueue');
-const redirectUrl = require('../config/constants');
+const { addQueue } = require('../helpers/emailQueue');
+const { checkIndices, saveSearchData, getSearchData } = require('../helpers/elasticSearch');
 
 module.exports.tinyurl = async function (request, reply) {
     await reply.file('./views/html/tinyurl.html');
@@ -46,7 +46,10 @@ module.exports.shortenurl = async function (request, reply) {
             shortUrl: shortUrl
         };
 
-        await sendMailQueue.add(data);
+        await checkIndices();
+        await saveSearchData(setObject.originalUrl, setObject.tinyUrl);
+
+        // await addQueue(data);
         
         reply(message).code(200);
     } catch (err) {
@@ -119,7 +122,8 @@ module.exports.deleteURL = async function(request, reply) {
 module.exports.searchURL = async function(request, reply) {
     try {
         const { inputValue } = request.params;
-        reply(inputValue).code(200);
+        const search_result = await getSearchData(inputValue);
+        reply(search_result).code(200);
     } catch(err) {
         console.log('Error in fetching url data', err);
         const data = {

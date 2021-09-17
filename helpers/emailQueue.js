@@ -17,12 +17,11 @@ const options = {
 };
 
 // 2. Adding a Job to the Queue
-function add(data) {
+function addQueue(data) {
     sendMailQueue.add(data, options);
     
     // 3. Consumer
     sendMailQueue.process(async job => { 
-        console.log('job.data', job.data);
         return await sendMail(job.data.email, job.data.shortUrl);
     });
 }
@@ -56,5 +55,5 @@ function sendMail(email, shortUrl) {
 }
 
 module.exports = {
-    add
+    addQueue
 }
